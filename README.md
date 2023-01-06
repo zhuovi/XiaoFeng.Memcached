@@ -35,13 +35,13 @@ XiaoFeng.Memcached generator with [XiaoFeng.Memcached](https://github.com/zhuovi
 .NET CLI
 
 ```
-$ dotnet add package XiaoFeng.Memcached
+$ dotnet add package XiaoFeng.Memcached --version 1.0.0
 ```
 
 Package Manager
 
 ```
-PM> Install-Package XiaoFeng.Memcached
+PM> Install-Package XiaoFeng.Memcached --Version 1.0.0
 ```
 
 PackageReference
@@ -50,6 +50,27 @@ PackageReference
 <PackageReference Include="XiaoFeng.Memcached" Version="1.0.0" />
 ```
 
+Paket CLI
+
+```
+> paket add XiaoFeng.Memcached --version 1.0.0
+```
+
+Script & Interactive
+
+```
+> #r "nuget: XiaoFeng.Memcached, 1.0.0"
+```
+
+Cake
+
+```
+// Install XiaoFeng.Memcached as a Cake Addin
+#addin nuget:?package=XiaoFeng.Memcached&version=1.0.0
+
+// Install XiaoFeng.Memcached as a Cake Tool
+#tool nuget:?package=XiaoFeng.Memcached&version=1.0.0
+```
 
 # XiaoFeng.Memcached
 
