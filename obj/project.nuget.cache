@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "V8e+/93Nu6syrH2i1XZ6/5Je/fKgXVThjeljpkvJM0vLkZQ2yruFlby+K7ArRFmwqhM5p3dcdAKZtuMqeO63Hg==",
+  "success": true,
+  "projectFilePath": "E:\\Work\\XiaoFeng.Memcached\\XiaoFeng.Memcached.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Administrator\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\xiaofeng.core\\2.0.1\\xiaofeng.core.2.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}
