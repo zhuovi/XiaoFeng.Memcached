@@ -114,7 +114,7 @@ namespace XiaoFeng.Memcached
         /// <summary>
         /// 协议
         /// </summary>
-        public MemcachedProtocol Protocol { get; set; } = MemcachedProtocol.Text;
+        public MemcachedProtocol MemcachedProtocol { get; set; } = MemcachedProtocol.Text;
         /// <summary>
         /// 压缩值 1M
         /// </summary>
@@ -155,7 +155,7 @@ namespace XiaoFeng.Memcached
             }
         }
         /// <summary>
-        /// RedisSocket 项
+        /// IMemcachedSocket 项
         /// </summary>
         public PoolItem<IO.IMemcachedSocket> MemcachedItem { get; set; }
         /// <summary>
@@ -671,12 +671,12 @@ namespace XiaoFeng.Memcached
         /// 用于获取key的带有CAS令牌值的value值，若key不存在，返回空。支持多个key 更新缓存时间
         /// </summary>
         /// <param name="exptime">过期时间</param>
-        /// <param name="keys">key</param>
+        /// <param name="key">key</param>
         /// <returns>值</returns>
-        public async Task<MemcachedValue> GatsAsync(uint exptime, params string[] keys)
+        public async Task<MemcachedValue> GatsAsync(uint exptime,string key)
         {
-            if (keys.IsNullOrEmpty() || keys.Length == 0) return null;
-            return await this.ExecuteAsync(CommandType.GATS, async reader => await Task.FromResult(reader.OK ? reader.Value?[0] : null), new object[] { exptime }.Concat(keys));
+            if (key.IsNullOrEmpty()) return null;
+            return await this.ExecuteAsync(CommandType.GATS, async reader => await Task.FromResult(reader.OK ? reader.Value?[0] : null), exptime ,key);
         }
         /// <summary>
         /// 用于获取key的带有CAS令牌值的value值，若key不存在，返回空。支持多个key 更新缓存时间
