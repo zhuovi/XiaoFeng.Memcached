@@ -81,7 +81,7 @@ Memcached提供了友好的访问API。
 Memcached连接串 
 
 ```csharp
-memcached://7092734:123456@127.0.0.1:11211/0?ConnectionTimeout=3000&ReadTimeout=3000&SendTimeout=3000&pool=3
+memcached://memcached:123456@127.0.0.1:11211/0?ConnectionTimeout=3000&ReadTimeout=3000&SendTimeout=3000&pool=3
 ```
 
 7092734	    帐号
@@ -107,7 +107,7 @@ pool			    连接池中连接数量
 实例化一个memcached对象
 
 ```csharp
-var memcached = new XiaoFeng.Memcached.MemcachedClient("memcached://7092734@127.0.0.1:11211/0");
+var memcached = new XiaoFeng.Memcached.MemcachedClient("memcached://memcached:123456@127.0.0.1:11211");
 ```
 
 #使用方法
