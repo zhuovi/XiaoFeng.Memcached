@@ -81,7 +81,7 @@ Memcached提供了友好的访问API。
 Memcached连接串 
 
 ```csharp
-memcached://memcached:123456@127.0.0.1:11211/0?ConnectionTimeout=3000&ReadTimeout=3000&SendTimeout=3000&pool=3
+memcached://memcached:123456@127.0.0.1:11211/?ConnectionTimeout=3000&ReadTimeout=3000&SendTimeout=3000&pool=3
 ```
 
 7092734	    帐号
