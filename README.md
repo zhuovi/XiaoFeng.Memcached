@@ -74,7 +74,7 @@ Cake
 
 # XiaoFeng.Memcached
 
-Memcached提供了友好的访问API。
+XiaoFeng.Memcached提供了友好的访问API。Memcached中间件,支持.NET框架、.NET内核和.NET标准库,一种非常方便操作的客户端工具。实现了Set,Add,Replace,PrePend,Append,Cas,Get,Gets,Gat,Gats,Delete,Touch,Stats,Stats Items,Stats Slabs,Stats Sizes,Flush_All,线程池功能。
 
 ## 基本使用方法
 
@@ -91,8 +91,6 @@ memcached   帐号
 127.0.0.1	主机
 
 11211		端口
-
-0			0库
 
 ConnectionTimeout	连接超时时长
 
