@@ -23,6 +23,7 @@ namespace XiaoFeng.Memcached
         /// 获取key的value值，若key不存在，返回空。支持多个key
         /// </summary>
         [Description("获取key的value值，若key不存在，返回空。支持多个key")]
+        [DefaultValue(0x00)] 
         Get = 20,
         /// <summary>
         /// 用于获取key的带有CAS令牌值的value值，若key不存在，返回空。支持多个key
@@ -44,18 +45,21 @@ namespace XiaoFeng.Memcached
         /// </summary>
         [Description("删除Key")]
         [EnumName("delete")]
+        [DefaultValue(0x04)]
         Delete = 24,
         /// <summary>
         /// 递增
         /// </summary>
         [Description("递增")]
         [EnumName("Incr")]
+        [DefaultValue(0x05)] 
         Increment = 25,
         /// <summary>
         /// 递减
         /// </summary>
         [Description("递减")]
         [EnumName("Decr")]
+        [DefaultValue(0x06)] 
         Decrement = 26,
         /// <summary>
         /// 修改key过期时间

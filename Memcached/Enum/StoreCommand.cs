@@ -23,26 +23,31 @@ namespace XiaoFeng.Memcached
         /// 给key设置一个值
         /// </summary>
         [Description("给key设置一个值")]
+        [DefaultValue(0x01)]
         Set = 0,
         /// <summary>
         /// 如果key不存在的话，就添加
         /// </summary>
         [Description("如果key不存在的话，就添加")]
+        [DefaultValue(0x02)]
         Add = 1,
         /// <summary>
         /// 用来替换已知key的value
         /// </summary>
         [Description("用来替换已知key的value")]
+        [DefaultValue(0x03)]
         Replace = 2,
         /// <summary>
         /// 表示将提供的值附加到现有key的value之后，是一个附加操作
         /// </summary>
-        [Description("表示将提供的值附加到现有key的value之后，是一个附加操作")] 
+        [Description("表示将提供的值附加到现有key的value之后，是一个附加操作")]
+        [DefaultValue(0x0E)]
         Append = 3,
         /// <summary>
         /// 将此数据添加到现有数据之前的现有键中
         /// </summary>
-        [Description("将此数据添加到现有数据之前的现有键中")] 
+        [Description("将此数据添加到现有数据之前的现有键中")]
+        [DefaultValue(0x0F)]
         Prepend = 4,
         /// <summary>
         /// 一个原子操作，只有当casunique匹配的时候，才会设置对应的值

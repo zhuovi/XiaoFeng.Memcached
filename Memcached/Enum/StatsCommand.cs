@@ -23,6 +23,7 @@ namespace XiaoFeng.Memcached
         /// 返回统计信息
         /// </summary>
         [Description("返回统计信息")]
+        [DefaultValue(0x10)]
         Stats = 40,
         /// <summary>
         /// 显示各个 slab 中 item 的数目和存储时长(最后一次访问距离现在的秒数)
