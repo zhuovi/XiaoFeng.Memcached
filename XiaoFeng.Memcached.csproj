@@ -7,7 +7,7 @@
 		<Description>Memcached中间件,支持.NET框架、.NET内核和.NET标准库,一种非常方便操作的客户端工具。实现了Set,Add,Replace,PrePend,Append,Cas,Get,Gets,Gat,Gats,Delete,Touch,Stats,Stats Items,Stats Slabs,Stats Sizes,Flush_All,Increment,Decrement,线程池功能。</Description>
 		<Copyright>CopyRight © 2008-2024 魔法精灵(www.fayelf.com) QQ:7092734 Email:jacky@fayelf.com</Copyright>
 		<Company>魔法精灵</Company>
-		<VersionPrefix>2.0</VersionPrefix>
+		<VersionPrefix>1.0</VersionPrefix>
 		<VersionSuffix>1</VersionSuffix>
 		<Version>$(VersionPrefix).$(VersionSuffix)</Version>
 		<FileVersion>$(Version)</FileVersion>
@@ -31,6 +31,6 @@
 		<Title>XiaoFeng.Memcached</Title>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="XiaoFeng.Core" Version="2.0.2" />
+		<PackageReference Include="XiaoFeng.Core" Version="2.0.3" />
 	</ItemGroup>
 </Project>

@@ -323,7 +323,7 @@ namespace XiaoFeng.Memcached
         /// <param name="exptime">过期时间</param>
         /// <param name="keys">key</param>
         /// <returns>值</returns>
-        async Task<List<MemcachedValue>> GatsAsync(uint exptime, params string[] keys);
+        Task<List<MemcachedValue>> GatsAsync(uint exptime, params string[] keys);
         /// <summary>
         /// 删除已存在的 key(键)
         /// </summary>
