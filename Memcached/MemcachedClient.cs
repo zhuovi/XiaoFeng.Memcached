@@ -36,7 +36,7 @@ namespace XiaoFeng.Memcached
         /// <param name="user">帐号</param>
         /// <param name="password">密码</param>
         /// <param name="MaxPool">应用池数量</param>
-        public MemcachedClient(string host = "127.0.0.1", int port = 1111, string user = "", string password = "", int? MaxPool = null)
+        public MemcachedClient(string host = "127.0.0.1", int port = 11211, string user = "", string password = "", int? MaxPool = null)
         {
             this.ConnConfig = new MemcachedConfig
             {
@@ -162,6 +162,10 @@ namespace XiaoFeng.Memcached
         /// 排它锁
         /// </summary>
         private static readonly Mutex Mutex = new Mutex();
+        /// <summary>
+        /// Key前缀
+        /// </summary>
+        public string KeyPrefix { get; set; }
         #endregion
 
         #region 方法
@@ -455,7 +459,8 @@ namespace XiaoFeng.Memcached
         /// <returns>成功状态</returns>
         public Boolean Store<T>(CommandType commandType, string key, T value, uint exptime = 0, ulong casToken = 0)
         {
-            var list = new List<object> { key, exptime };
+            if (key.IsNullOrEmpty()) return false;
+            var list = new List<object> { this.KeyPrefix + key, exptime };
             if (casToken > 0) list.Add(casToken);
             list.Add(value);
             return this.Execute(commandType, reader => reader.OK, list.ToArray());
@@ -472,7 +477,8 @@ namespace XiaoFeng.Memcached
         /// <returns>成功状态</returns>
         public async Task<Boolean> StoreAsync<T>(CommandType commandType, string key, T value, uint exptime = 0, ulong casToken = 0)
         {
-            var list = new List<object> { key, exptime };
+            if (key.IsNullOrEmpty()) return false;
+            var list = new List<object> { this.KeyPrefix + key, exptime };
             if (casToken > 0) list.Add(casToken);
             list.Add(value);
             return await this.ExecuteAsync(commandType, async reader => await Task.FromResult(reader.OK), list.ToArray());
@@ -488,7 +494,7 @@ namespace XiaoFeng.Memcached
         public MemcachedValue Get(string key)
         {
             if (key.IsNullOrEmpty()) return null;
-            return this.Execute(CommandType.GET, reader => reader.OK ? reader.Value?[0] : null, key);
+            return this.Execute(CommandType.GET, reader => reader.OK ? reader.Value?[0] : null, this.KeyPrefix + key);
         }
         /// <summary>
         /// 获取key的value值，若key不存在，返回空。
@@ -498,7 +504,7 @@ namespace XiaoFeng.Memcached
         public async Task<MemcachedValue> GetAsync(string key)
         {
             if (key.IsNullOrEmpty()) return null;
-            return await this.ExecuteAsync(CommandType.GET, async reader => await Task.FromResult(reader.OK ? reader.Value?[0] : null), key);
+            return await this.ExecuteAsync(CommandType.GET, async reader => await Task.FromResult(reader.OK ? reader.Value?[0] : null), this.KeyPrefix + key);
         }
         /// <summary>
         /// 获取key的value值，若key不存在，返回空。支持多个key
@@ -508,6 +514,11 @@ namespace XiaoFeng.Memcached
         public List<MemcachedValue> Get(params string[] keys)
         {
             if (keys.Length == 0) return null;
+            if (this.KeyPrefix.IsNotNullOrEmpty())
+                keys.Each(k =>
+                {
+                    k = this.KeyPrefix + k;
+                });
             return this.Execute(CommandType.GET, reader => reader.OK ? reader.Value : null, keys);
         }
         /// <summary>
@@ -518,6 +529,11 @@ namespace XiaoFeng.Memcached
         public async Task<List<MemcachedValue>> GetAsync(params string[] keys)
         {
             if (keys.Length == 0) return null;
+            if (this.KeyPrefix.IsNotNullOrEmpty())
+                keys.Each(k =>
+                {
+                    k = this.KeyPrefix + k;
+                });
             return await this.ExecuteAsync(CommandType.GET, async reader => await Task.FromResult(reader.OK ? reader.Value : null), keys);
         }
         /// <summary>
@@ -528,7 +544,7 @@ namespace XiaoFeng.Memcached
         public MemcachedValue Gets(string key)
         {
             if (key.IsNullOrEmpty()) return null;
-            return this.Execute(CommandType.GETS, reader => reader.OK ? reader.Value?[0] : null, key);
+            return this.Execute(CommandType.GETS, reader => reader.OK ? reader.Value?[0] : null, this.KeyPrefix + key);
         }
         /// <summary>
         /// 用于获取key的带有CAS令牌值的value值，若key不存在，返回空。
@@ -538,7 +554,7 @@ namespace XiaoFeng.Memcached
         public async Task<MemcachedValue> GetsAsync(string key)
         {
             if (key.IsNullOrEmpty()) return null;
-            return await this.ExecuteAsync(CommandType.GETS, async reader => await Task.FromResult(reader.OK ? reader.Value?[0] : null), key);
+            return await this.ExecuteAsync(CommandType.GETS, async reader => await Task.FromResult(reader.OK ? reader.Value?[0] : null), this.KeyPrefix + key);
         }
         /// <summary>
         /// 用于获取key的带有CAS令牌值的value值，若key不存在，返回空。支持多个key
@@ -548,6 +564,11 @@ namespace XiaoFeng.Memcached
         public List<MemcachedValue> Gets(params string[] keys)
         {
             if (keys.Length == 0) return null;
+            if (this.KeyPrefix.IsNotNullOrEmpty())
+                keys.Each(k =>
+                {
+                    k = this.KeyPrefix + k;
+                });
             return this.Execute(CommandType.GETS, reader => reader.OK ? reader.Value : null, keys);
         }
         /// <summary>
@@ -558,6 +579,11 @@ namespace XiaoFeng.Memcached
         public async Task<List<MemcachedValue>> GetsAsync(params string[] keys)
         {
             if (keys.Length == 0) return null;
+            if (this.KeyPrefix.IsNotNullOrEmpty())
+                keys.Each(k =>
+                {
+                    k = this.KeyPrefix + k;
+                });
             return await this.ExecuteAsync(CommandType.GETS, async reader => await Task.FromResult(reader.OK ? reader.Value : null), keys);
         }
         /// <summary>
@@ -569,7 +595,7 @@ namespace XiaoFeng.Memcached
         public MemcachedValue Gat(uint exptime, string key)
         {
             if (key.IsNullOrEmpty()) return null;
-            return this.Execute(CommandType.GAT, reader => reader.OK ? reader.Value?[0] : null, exptime, key);
+            return this.Execute(CommandType.GAT, reader => reader.OK ? reader.Value?[0] : null, exptime, this.KeyPrefix + key);
         }
         /// <summary>
         /// 获取key的value值，若key不存在，返回空。更新缓存时间
@@ -580,7 +606,7 @@ namespace XiaoFeng.Memcached
         public async Task<MemcachedValue> GatAsync(uint exptime, string key)
         {
             if (key.IsNullOrEmpty()) return null;
-            return await this.ExecuteAsync(CommandType.GAT, async reader => await Task.FromResult(reader.OK ? reader.Value?[0] : null), exptime, key);
+            return await this.ExecuteAsync(CommandType.GAT, async reader => await Task.FromResult(reader.OK ? reader.Value?[0] : null), exptime, this.KeyPrefix + key);
         }
         /// <summary>
         /// 获取key的value值，若key不存在，返回空。支持多个key 更新缓存时间
@@ -591,6 +617,11 @@ namespace XiaoFeng.Memcached
         public List<MemcachedValue> Gat(uint exptime, params string[] keys)
         {
             if (keys.Length == 0) return null;
+            if (this.KeyPrefix.IsNotNullOrEmpty())
+                keys.Each(k =>
+                {
+                    k = this.KeyPrefix + k;
+                });
             return this.Execute(CommandType.GAT, reader => reader.OK ? reader.Value : null, new object[] { exptime }.Concat(keys).ToArray());
         }
         /// <summary>
@@ -602,6 +633,11 @@ namespace XiaoFeng.Memcached
         public async Task<List<MemcachedValue>> GatAsync(uint exptime, params string[] keys)
         {
             if (keys.Length == 0) return null;
+            if (this.KeyPrefix.IsNotNullOrEmpty())
+                keys.Each(k =>
+                {
+                    k = this.KeyPrefix + k;
+                });
             return await this.ExecuteAsync(CommandType.GAT, async reader => await Task.FromResult(reader.OK ? reader.Value : null), new object[] { exptime }.Concat(keys).ToArray());
         }
         /// <summary>
@@ -613,7 +649,7 @@ namespace XiaoFeng.Memcached
         public MemcachedValue Gats(uint exptime, string key)
         {
             if (key.IsNullOrEmpty()) return null;
-            return this.Execute(CommandType.GATS, reader => reader.OK ? reader.Value?[0] : null, exptime, key);
+            return this.Execute(CommandType.GATS, reader => reader.OK ? reader.Value?[0] : null, exptime, this.KeyPrefix + key);
         }
         /// <summary>
         /// 用于获取key的带有CAS令牌值的value值，若key不存在，返回空。支持多个key 更新缓存时间
@@ -624,7 +660,7 @@ namespace XiaoFeng.Memcached
         public async Task<MemcachedValue> GatsAsync(uint exptime, string key)
         {
             if (key.IsNullOrEmpty()) return null;
-            return await this.ExecuteAsync(CommandType.GATS, async reader => await Task.FromResult(reader.OK ? reader.Value?[0] : null), exptime, key);
+            return await this.ExecuteAsync(CommandType.GATS, async reader => await Task.FromResult(reader.OK ? reader.Value?[0] : null), exptime, this.KeyPrefix + key);
         }
         /// <summary>
         /// 用于获取key的带有CAS令牌值的value值，若key不存在，返回空。支持多个key 更新缓存时间
@@ -635,6 +671,11 @@ namespace XiaoFeng.Memcached
         public List<MemcachedValue> Gats(uint exptime, params string[] keys)
         {
             if (keys.Length == 0) return null;
+            if (this.KeyPrefix.IsNotNullOrEmpty())
+                keys.Each(k =>
+                {
+                    k = this.KeyPrefix + k;
+                });
             return this.Execute(CommandType.GATS, reader => reader.OK ? reader.Value : null, new object[] { exptime }.Concat(keys).ToArray());
         }
         /// <summary>
@@ -646,6 +687,11 @@ namespace XiaoFeng.Memcached
         public async Task<List<MemcachedValue>> GatsAsync(uint exptime, params string[] keys)
         {
             if (keys.Length == 0) return null;
+            if (this.KeyPrefix.IsNotNullOrEmpty())
+                keys.Each(k =>
+                {
+                    k = this.KeyPrefix + k;
+                });
             return await this.ExecuteAsync(CommandType.GATS, async reader => await Task.FromResult(reader.OK ? reader.Value : null), new object[] { exptime }.Concat(keys).ToArray());
         }
         /// <summary>
@@ -656,7 +702,7 @@ namespace XiaoFeng.Memcached
         public Boolean Delete(string key)
         {
             if (key.IsNullOrEmpty()) return false;
-            return this.Execute(CommandType.DELETE, reader => reader.OK, key);
+            return this.Execute(CommandType.DELETE, reader => reader.OK, this.KeyPrefix + key);
         }
         /// <summary>
         /// 删除已存在的 key(键)
@@ -666,7 +712,7 @@ namespace XiaoFeng.Memcached
         public async Task<Boolean> DeleteAsync(string key)
         {
             if (key.IsNullOrEmpty()) return false;
-            return await this.ExecuteAsync(CommandType.DELETE, async reader => await Task.FromResult(reader.OK), key);
+            return await this.ExecuteAsync(CommandType.DELETE, async reader => await Task.FromResult(reader.OK), this.KeyPrefix + key);
         }
         /// <summary>
         /// 递增
@@ -677,7 +723,7 @@ namespace XiaoFeng.Memcached
         public ulong Increment(string key, uint incrementValue)
         {
             if (key.IsNullOrEmpty()) return 0;
-            return this.Execute(CommandType.INCREMENT, reader => reader.OK ? (ulong)reader.Value?[0].Value : 0, key, incrementValue);
+            return this.Execute(CommandType.INCREMENT, reader => reader.OK ? (ulong)reader.Value?[0].Value : 0, this.KeyPrefix + key, incrementValue);
         }
         /// <summary>
         /// 递增
@@ -688,7 +734,7 @@ namespace XiaoFeng.Memcached
         public async Task<ulong> IncrementAsync(string key, uint incrementValue)
         {
             if (key.IsNullOrEmpty()) return 0;
-            return await this.ExecuteAsync(CommandType.INCREMENT, async reader => await Task.FromResult(reader.OK ? (ulong)reader.Value?[0].Value : 0), key, incrementValue);
+            return await this.ExecuteAsync(CommandType.INCREMENT, async reader => await Task.FromResult(reader.OK ? (ulong)reader.Value?[0].Value : 0), this.KeyPrefix + key, incrementValue);
         }
         /// <summary>
         /// 递减
@@ -699,7 +745,7 @@ namespace XiaoFeng.Memcached
         public ulong Decrement(string key, uint incrementValue)
         {
             if (key.IsNullOrEmpty()) return 0;
-            return this.Execute(CommandType.DECREMENT, reader => reader.OK ? (ulong)reader.Value?[0].Value : 0, key, incrementValue);
+            return this.Execute(CommandType.DECREMENT, reader => reader.OK ? (ulong)reader.Value?[0].Value : 0, this.KeyPrefix + key, incrementValue);
         }
         /// <summary>
         /// 递减
@@ -710,7 +756,7 @@ namespace XiaoFeng.Memcached
         public async Task<ulong> DecrementAsync(string key, uint incrementValue)
         {
             if (key.IsNullOrEmpty()) return 0;
-            return await this.ExecuteAsync(CommandType.DECREMENT, async reader => await Task.FromResult(reader.OK ? (ulong)reader.Value?[0].Value : 0), key, incrementValue);
+            return await this.ExecuteAsync(CommandType.DECREMENT, async reader => await Task.FromResult(reader.OK ? (ulong)reader.Value?[0].Value : 0), this.KeyPrefix + key, incrementValue);
         }
         /// <summary>
         /// 修改key过期时间
@@ -721,7 +767,7 @@ namespace XiaoFeng.Memcached
         public Boolean Touch(string key, uint exptime)
         {
             if (key.IsNullOrEmpty()) return false;
-            return this.Execute(CommandType.TOUCH, reader => reader.OK, key, exptime);
+            return this.Execute(CommandType.TOUCH, reader => reader.OK, this.KeyPrefix + key, exptime);
         }
         /// <summary>
         /// 修改key过期时间
@@ -732,7 +778,7 @@ namespace XiaoFeng.Memcached
         public async Task<Boolean> TouchAsync(string key, uint exptime)
         {
             if (key.IsNullOrEmpty()) return false;
-            return await this.ExecuteAsync(CommandType.TOUCH, async reader => await Task.FromResult(reader.OK), key, exptime);
+            return await this.ExecuteAsync(CommandType.TOUCH, async reader => await Task.FromResult(reader.OK), this.KeyPrefix + key, exptime);
         }
         #endregion
 
