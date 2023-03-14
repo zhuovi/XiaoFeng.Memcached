@@ -76,6 +76,11 @@ Memcached连接串
 
 ```csharp
 memcached://memcached:123456@127.0.0.1:11211/?ConnectionTimeout=3000&ReadTimeout=3000&SendTimeout=3000&pool=3
+
+[<protocol>]://[[<username>:<password>@]<host>:<port>][/<database>][?<p1>=<v1>[&<p2>=<v2>]]
+|----------|---|-----------|-----------|------|------|------------|-----------------------|
+| protocol |   | username  | password  | host | port |  database  |  params               |
+
 ```
 
 memcached   帐号
