@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net.Security;
 using System.Net.Sockets;
-using XiaoFeng.Net;
 
 /****************************************************************
 *  Copyright © (2022) www.fayelf.com All Rights Reserved.       *
@@ -90,10 +89,6 @@ namespace XiaoFeng.Memcached.IO
         /// 库索引
         /// </summary>
         public int? DbNum { get; set; }
-        /// <summary>
-        /// 客户端
-        /// </summary>
-        private ISocketClient Client { get; set; }
         #endregion
 
         #region 方法
@@ -104,16 +99,7 @@ namespace XiaoFeng.Memcached.IO
         /// </summary>
         private void Init()
         {
-            if (this.Client != null) this.Client.Stop();
-            this.Client = new SocketClient()
-            {
-                SocketType = this.SocketType,
-                ConnectTimeout = this.ConnConfig.ConnectionTimeout,
-                ReceiveTimeout = this.ReceiveTimeout,
-                SendTimeout = this.SendTimeout,
-                ProtocolType = this.ProtocolType
-            };
-            /*if (this.Stream != null)
+            if (this.Stream != null)
             {
                 this.Stream.Close();
                 this.Stream.Dispose();
@@ -128,7 +114,7 @@ namespace XiaoFeng.Memcached.IO
             this.SocketClient = new Socket(this.AddressFamily, this.SocketType, this.ProtocolType);
             this.SocketClient.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, this.SendTimeout);
             this.SocketClient.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, this.ReceiveTimeout);
-            this.SocketClient.NoDelay = true;*/
+            this.SocketClient.NoDelay = true;
         }
         #endregion
 
@@ -137,23 +123,13 @@ namespace XiaoFeng.Memcached.IO
         public void Connect()
         {
             Init();
-            var state = this.Client.Connect(this.ConnConfig.Host, this.ConnConfig.Port);
-            if (state == SocketError.Success)
-            {
-                this.GetStream();
-            }
-            else if (state == SocketError.TimedOut)
-            {
-                throw new MemcachedException($"连接服务器超时.{this.ConnConfig.ToJson()}");
-            }
-            /*
+            
             IAsyncResult result = this.SocketClient.BeginConnect(this.ConnConfig.Host, this.ConnConfig.Port, null, null);
             if (!result.AsyncWaitHandle.WaitOne(Math.Max(this.ConnConfig.ConnectionTimeout, 10000), true))
                 throw new MemcachedException($"连接服务器超时.{this.ConnConfig.ToJson()}");
 
             this.SocketClient.EndConnect(result);
             this.GetStream();
-            */
         }
         #endregion
 
@@ -162,15 +138,14 @@ namespace XiaoFeng.Memcached.IO
         {
             if (this.Stream != null) return this.Stream;
 
-            return this.Stream = this.Client.GetSslStream();
-            /*var ns = new NetworkStream(this.SocketClient, true);
+           var ns = new NetworkStream(this.SocketClient, true);
 
             if (!this.IsSsl) { this.Stream = ns; return ns; }
 
             var sns = new SslStream(ns, true, new RemoteCertificateValidationCallback((o, cert, chain, errors) => errors == SslPolicyErrors.None));
             sns.AuthenticateAsClient(this.ConnConfig.Host);
             this.Stream = sns;
-            return sns;*/
+            return sns;
         }
 
         #region 关闭
@@ -182,8 +157,6 @@ namespace XiaoFeng.Memcached.IO
             try
             {
                 this.IsAuth = false;
-                if (this.Client != null)
-                    this.Client?.Stop();
                 if (this.Stream != null)
                 {
                     this.Stream?.Close();
