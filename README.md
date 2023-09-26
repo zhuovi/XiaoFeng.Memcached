@@ -29,44 +29,50 @@ XiaoFeng.Memcached generator with [XiaoFeng.Memcached](https://github.com/zhuovi
 .NET CLI
 
 ```
-$ dotnet add package XiaoFeng.Memcached --version 1.0.3
+$ dotnet add package XiaoFeng.Memcached --version 1.0.4
 ```
 
 Package Manager
 
 ```
-PM> Install-Package XiaoFeng.Memcached --Version 1.0.3
+PM> Install-Package XiaoFeng.Memcached --Version 1.0.4
 ```
 
 PackageReference
 
 ```
-<PackageReference Include="XiaoFeng.Memcached" Version="1.0.3" />
+<PackageReference Include="XiaoFeng.Memcached" Version="1.0.4" />
 ```
 
 Paket CLI
 
 ```
-> paket add XiaoFeng.Memcached --version 1.0.3
+> paket add XiaoFeng.Memcached --version 1.0.4
 ```
 
 Script & Interactive
 
 ```
-> #r "nuget: XiaoFeng.Memcached, 1.0.3"
+> #r "nuget: XiaoFeng.Memcached, 1.0.4"
 ```
 
 Cake
 
 ```
 // Install XiaoFeng.Memcached as a Cake Addin
-#addin nuget:?package=XiaoFeng.Memcached&version=1.0.3
+#addin nuget:?package=XiaoFeng.Memcached&version=1.0.4
 
 // Install XiaoFeng.Memcached as a Cake Tool
-#tool nuget:?package=XiaoFeng.Memcached&version=1.0.3
+#tool nuget:?package=XiaoFeng.Memcached&version=1.0.4
 ```
 
 # 更新日志
+
+## 2023-09-26	v 1.0.4
+
+1.Memcached增加二进制协议传输入，重构Memcached类库;
+
+2.优化已知问题;
 
 ## 2023-08-29	v 1.0.3
 

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Compression;
 using System.IO;
 using System.Text;
-using System.Runtime.Serialization.Formatters.Binary;
-using XiaoFeng.Memcached.Transform;
 
 /****************************************************************
 *  Copyright © (2023) www.fayelf.com All Rights Reserved.       *
@@ -16,7 +13,7 @@ using XiaoFeng.Memcached.Transform;
 *  Version : v 1.0.0                                            *
 *  CLR Version : 4.0.30319.42000                                *
 *****************************************************************/
-namespace XiaoFeng.Memcached
+namespace XiaoFeng.Memcached.Internal
 {
     /// <summary>
     /// 帮助类
@@ -39,6 +36,11 @@ namespace XiaoFeng.Memcached
         /// <returns>压缩后的数据</returns>
         public static byte[] Serialize(object value, out ValueType type, uint compressionLength)
         {
+            if (value == null)
+            {
+                type = ValueType.Object;
+                return Array.Empty<byte>();
+            }
             byte[] bytes;
             if (value is byte[] bsval)
             {
@@ -117,6 +119,15 @@ namespace XiaoFeng.Memcached
             }
             else
             {
+                type = ValueType.Object;
+                var json = value.GetType().AssemblyQualifiedName + "\r\n" + value.ToJson();
+                bytes = json.GetBytes();
+                if (bytes.Length > compressionLength)
+                {
+                    bytes = Compression(bytes);
+                    type = ValueType.CompressedObject;
+                }
+                /*
                 using (MemoryStream ms = new MemoryStream())
                 {
                     new BinaryFormatter().Serialize(ms, value);
@@ -127,7 +138,7 @@ namespace XiaoFeng.Memcached
                         bytes = Compression(bytes);
                         type = ValueType.CompressedObject;
                     }
-                }
+                }*/
             }
             return bytes;
         }
@@ -169,14 +180,24 @@ namespace XiaoFeng.Memcached
                 case ValueType.Double:
                     return BitConverter.ToDouble(bytes, 0);
                 case ValueType.Object:
-                    using (MemoryStream ms = new MemoryStream(bytes))
-                        return new BinaryFormatter().Deserialize(ms);
+                    using (var oReader = new StreamReader(new MemoryStream(bytes)))
+                    {
+                        var otypeName = oReader.ReadLine();
+                        var otype = Type.GetType(otypeName);
+                        return oReader.ReadToEnd().JsonToObject(otype);
+                    }
                 case ValueType.CompressedByteArray:
                     return Deserialize(Decompression(bytes), ValueType.ByteArray);
                 case ValueType.CompressedString:
                     return Deserialize(Decompression(bytes), ValueType.String);
                 case ValueType.CompressedObject:
-                    return Deserialize(Decompression(bytes), ValueType.Object);
+                    using (var coReader = new StreamReader(new MemoryStream(Decompression(bytes))))
+                    {
+                        var cotypeName = coReader.ReadLine();
+                        var cotype = Type.GetType(cotypeName);
+                        return coReader.ReadToEnd().JsonToObject(cotype);
+                    }
+                //return Deserialize(Decompression(bytes), ValueType.Object);
                 case ValueType.ByteArray:
                 default:
                     return bytes;

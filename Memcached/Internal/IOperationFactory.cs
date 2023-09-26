@@ -1,39 +1,34 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using XiaoFeng.Memcached.Internal;
-using XiaoFeng.Memcached.Transform;
+﻿using System.Threading.Tasks;
 
 /****************************************************************
-*  Copyright © (2023) www.fayelf.com All Rights Reserved.       *
+*  Copyright © (2023) www.eelf.cn All Rights Reserved.          *
 *  Author : jacky                                               *
 *  QQ : 7092734                                                 *
-*  Email : jacky@fayelf.com                                     *
-*  Site : www.fayelf.com                                        *
-*  Create Time : 2023-01-13 09:48:03                            *
+*  Email : jacky@eelf.cn                                        *
+*  Site : www.eelf.cn                                           *
+*  Create Time : 2023-09-15 16:30:17                            *
 *  Version : v 1.0.0                                            *
 *  CLR Version : 4.0.30319.42000                                *
 *****************************************************************/
-namespace XiaoFeng.Memcached
+namespace XiaoFeng.Memcached.Internal
 {
     /// <summary>
-    /// Memcached客户端接口
+    /// 操作工厂
     /// </summary>
-    public interface IMemcachedClient
+    public interface IOperationFactory
     {
+        #region 构造器
+
+        #endregion
+
         #region 属性
         /// <summary>
         /// 配置
         /// </summary>
-        MemcachedConfig Config { get; set; }
+        MemcachedConfig MemcachedConfig { get; set; }
         #endregion
 
-        #region GET
+        #region 方法
         /// <summary>
         /// 获取key的value值，若key不存在，返回空。
         /// </summary>
@@ -41,7 +36,7 @@ namespace XiaoFeng.Memcached
         /// <returns></returns>
         Task<GetOperationResult> GetAsync(params string[] keys);
         /// <summary>
-        /// 获取key的value值，若key不存在，返回空。
+        /// 用于获取key的带有CAS令牌值的value值，若key不存在，返回空。
         /// </summary>
         /// <param name="keys">键</param>
         /// <returns></returns>
@@ -49,23 +44,21 @@ namespace XiaoFeng.Memcached
         /// <summary>
         /// 获取key的value值，若key不存在，返回空。支持多个key 更新缓存时间
         /// </summary>
-        /// <param name="exptime">过期时间</param>
-        /// <param name="keys">key</param>
-        /// <returns>值</returns>
-        /// <remarks>注:<see langword="Text"/> 协议提示不识别 Gat命令;</remarks>
-        Task<GetOperationResult> GatAsync(uint exptime, params string[] keys);
+        /// <param name="expiry">缓存时间 单位为秒</param>
+        /// <param name="keys">键</param>
+        /// <returns></returns>
+        Task<GetOperationResult> GatAsync(uint expiry, params string[] keys);
         /// <summary>
         /// 获取key的value值，若key不存在，返回空。支持多个key 更新缓存时间
         /// </summary>
-        /// <param name="exptime">过期时间</param>
-        /// <param name="keys">key</param>
-        /// <returns>值</returns>
-        /// <remarks>注:<see langword="Text"/> 协议提示不识别 Gat命令;</remarks>
-        Task<GetOperationResult> GatsAsync(uint exptime, params string[] keys);
+        /// <param name="expiry">缓存时间 单位为秒</param>
+        /// <param name="keys">键</param>
+        /// <returns></returns>
+        Task<GetOperationResult> GatsAsync(uint expiry, params string[] keys);
         /// <summary>
         /// 删除已存在的 key(键)
         /// </summary>
-        /// <param name="keys">key</param>
+        /// <param name="keys">键</param>
         /// <returns></returns>
         Task<GetOperationResult> DeleteAsync(params string[] keys);
         /// <summary>
@@ -76,7 +69,7 @@ namespace XiaoFeng.Memcached
         /// <param name="defaultValue">默认值</param>
         /// <param name="expiry">过期时间</param>
         /// <returns></returns>
-        Task<GetOperationResult> IncrementAsync(string key, ulong step, ulong defaultValue = 1, uint expiry = 0);
+        Task<GetOperationResult> IncrementAsync(string key, ulong step, ulong defaultValue, uint expiry);
         /// <summary>
         /// 递减
         /// </summary>
@@ -85,7 +78,7 @@ namespace XiaoFeng.Memcached
         /// <param name="defaultValue">默认值</param>
         /// <param name="expiry">过期时间</param>
         /// <returns></returns>
-        Task<GetOperationResult> DecrementAsync(string key, ulong step, ulong defaultValue = 1, uint expiry = 0);
+        Task<GetOperationResult> DecrementAsync(string key, ulong step, ulong defaultValue,uint expiry);
         /// <summary>
         /// 修改key过期时间
         /// </summary>
@@ -93,61 +86,55 @@ namespace XiaoFeng.Memcached
         /// <param name="keys">key</param>
         /// <returns></returns>
         Task<GetOperationResult> TouchAsync(uint expiry, params string[] keys);
-        #endregion
-
-        #region STORE
         /// <summary>
         /// 给key设置一个值
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="value">值</param>
-        /// <param name="expiry">过期时间 单位为秒</param>
+        /// <param name="expiry">过期时间 单位为秒 默认不限制</param>
         /// <returns></returns>
-        Task<StoreOperationResult> SetAsync(string key, object value, uint expiry = 0);
+        Task<StoreOperationResult> SetAsync(string key, object value, uint expiry);
         /// <summary>
         /// 如果key不存在的话，就添加
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="value">值</param>
-        /// <param name="expiry">过期时间 单位为秒</param>
+        /// <param name="expiry">过期时间 单位为秒 默认不限制</param>
         /// <returns></returns>
-        Task<StoreOperationResult> AddAsync(string key, object value, uint expiry = 0);
+        Task<StoreOperationResult> AddAsync(string key, object value, uint expiry);
         /// <summary>
         /// 用来替换已知key的value
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="value">值</param>
-        /// <param name="expiry">过期时间 单位为秒</param>
+        /// <param name="expiry">过期时间 单位为秒 默认不限制</param>
         /// <returns></returns>
-        Task<StoreOperationResult> ReplaceAsync(string key, object value, uint expiry = 0);
+        Task<StoreOperationResult> ReplaceAsync(string key, object value, uint expiry);
         /// <summary>
         /// 表示将提供的值附加到现有key的value之后，是一个附加操作
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="value">值</param>
-        /// <param name="expiry">过期时间 单位为秒</param>
+        /// <param name="expiry">过期时间 单位为秒 默认不限制</param>
         /// <returns></returns>
-        Task<StoreOperationResult> AppendAsync(string key, object value, uint expiry = 0);
+        Task<StoreOperationResult> AppendAsync(string key, object value, uint expiry);
         /// <summary>
         /// 将此数据添加到现有数据之前的现有键中
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="value">值</param>
-        /// <param name="expiry">过期时间 单位为秒</param>
+        /// <param name="expiry">过期时间 单位为秒 默认不限制</param>
         /// <returns></returns>
-        Task<StoreOperationResult> PrependAsync(string key, object value, uint expiry = 0);
+        Task<StoreOperationResult> PrependAsync(string key, object value, uint expiry);
         /// <summary>
-        /// 将此数据添加到现有数据之前的现有键中 仅Text支持
+        /// 将此数据添加到现有数据之前的现有键中
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="value">值</param>
         /// <param name="casToken">通过 gets 命令获取的一个唯一的64位值</param>
         /// <param name="expiry">过期时间 单位为秒 默认不限制</param>
         /// <returns></returns>
-        Task<StoreOperationResult> CasAsync(string key, object value, ulong casToken, uint expiry = 0);
-        #endregion
-
-        #region STAT
+        Task<StoreOperationResult> CasAsync(string key, object value,ulong casToken, uint expiry);
         /// <summary>
         /// 统计信息
         /// </summary>
@@ -173,15 +160,12 @@ namespace XiaoFeng.Memcached
         /// </summary>
         /// <param name="timeout">延迟多长时间执行清理 单位为秒</param>
         /// <returns></returns>
-        Task<StatsOperationResult> FulshAllAsync(uint timeout = 0);
+        Task<StatsOperationResult> FulshAllAsync(uint timeout);
         /// <summary>
         /// 服务器版本
         /// </summary>
         /// <returns></returns>
         Task<StatsOperationResult> VersionAsync();
-        #endregion
-
-        #region 释放
         /// <summary>
         /// 释放
         /// </summary>

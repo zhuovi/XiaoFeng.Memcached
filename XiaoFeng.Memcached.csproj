@@ -8,7 +8,7 @@
 		<Copyright>CopyRight © 2008-2024 魔法精灵(www.fayelf.com) QQ:7092734 Email:jacky@fayelf.com</Copyright>
 		<Company>魔法精灵</Company>
 		<VersionPrefix>1.0</VersionPrefix>
-		<VersionSuffix>3</VersionSuffix>
+		<VersionSuffix>4</VersionSuffix>
 		<Version>$(VersionPrefix).$(VersionSuffix)</Version>
 		<FileVersion>$(Version)</FileVersion>
 		<AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
@@ -36,6 +36,6 @@
 		<None Include="LICENSE" Pack="true" PackagePath="\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\XiaoFeng.Core\XiaoFeng.Core.csproj" />
+	  <ProjectReference Include="..\XiaoFeng.Net\XiaoFeng.Net.csproj" />
 	</ItemGroup>
 </Project>
