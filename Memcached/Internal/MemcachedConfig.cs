@@ -32,7 +32,7 @@ namespace XiaoFeng.Memcached
         {
             this.Servers = new List<IPEndPoint>();
             this.Protocol = MemcachedProtocol.Text;
-            this.Transform= new ModifiedFNV1_32();
+            this.Transform = new ModifiedFNV1_32();
             this.Encoding = Encoding.UTF8;
         }
         /// <summary>
@@ -54,7 +54,7 @@ namespace XiaoFeng.Memcached
         /// <param name="iPEndPoints">网络终节点</param>
         /// <param name="username">用户名</param>
         /// <param name="password">密码</param>
-        public MemcachedConfig(IEnumerable<IPEndPoint> iPEndPoints, string username, string password):this()
+        public MemcachedConfig(IEnumerable<IPEndPoint> iPEndPoints, string username, string password) : this()
         {
             this.AddServer(iPEndPoints);
             this.UserName = username;
@@ -67,7 +67,7 @@ namespace XiaoFeng.Memcached
         /// <remarks>
         /// <para><see langword="格式"/> : [&lt;protocol&gt;]://[[&lt;username&gt;:&lt;password&gt;@]&lt;host&gt;:&lt;port&gt;][?&lt;ConnectionTimeout&gt;=10[&amp;&lt;ReadTimeout&gt;=10][&amp;&lt;WiteTimeout&gt;=10][&amp;&lt;PoolSize&gt;=10]]</para>
         /// <para><term>protocol</term> 协议，固定值为memcached</para>
-        /// <para><term>username</term> 帐号</para>
+        /// <para><term>username</term> 账号</para>
         /// <para><term>password</term> 密码</para>
         /// <para><term>host</term> 服务器地址或DNS</para>
         /// <para><term>port</term> 服务器端口 默认为11211</para>
@@ -123,7 +123,7 @@ namespace XiaoFeng.Memcached
         /// </summary>
         public X509CertificateCollection Certificates { get; set; }
         /// <summary>
-        /// 帐号
+        /// 账号
         /// </summary>
         public string UserName { get; set; }
         /// <summary>
